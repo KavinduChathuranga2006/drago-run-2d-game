@@ -19,13 +19,13 @@
 
     function idleAnimation(){
         idleImageNumber++; if(idleImageNumber>10) idleImageNumber=1;
-        boy.src = "images/idle_" + idleImageNumber + ".png";
+        boy.src = "../images/idle_" + idleImageNumber + ".png";
     }
     function idleAnimationStart(){ clearInterval(idleIntervalId); idleIntervalId=setInterval(idleAnimation,200); }
 
     function runAnimation(){
         runImageNumber++; if(runImageNumber>10) runImageNumber=1;
-        boy.src = "images/run_" + runImageNumber + ".png";
+        boy.src = "../images/run_" + runImageNumber + ".png";
     }
     function runAnimationStart(){
         if(runIntervalId) return;
@@ -46,7 +46,7 @@
             runImageNumber=0;
             runAnimationStart();
         }
-        boy.src = "images/jump_" + jumpImageNumber + ".png";
+        boy.src = "../images/jump_" + jumpImageNumber + ".png";
     }
     function jumpAnimationStart(){
         if(jumpIntervalId) return;
@@ -105,7 +105,7 @@
     function boyDeadAnimation(){
         deadImageNumber++;
         if(deadImageNumber>=11){ deadImageNumber=10; endScreen.style.visibility="visible"; endScoreElem.innerHTML=score; clearInterval(deadIntervalId);}
-        boy.src="images/dead_"+deadImageNumber+".png";
+        boy.src="../images/dead_"+deadImageNumber+".png";
     }
 
     function keyCheck(event){

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forest</title>
+    <link rel="stylesheet" href="2.css">
+</head>
+<body class="body">
+    <div class="background" id="background">
+        <img src="resources/idle_1.png" class="boy" id="boy" />
+        <div class="score" id="score">0</div>
+    </div>
+
+    <div class="end" id="end">
+        <div style="color: rgb(248, 7, 7);">Game Over!</div>
+        <div style="color: rgb(14, 15, 10);">Your Score</div>
+        <div style="color: rgb(244, 248, 241);" id="endScore">0</div>
+        <button class="button" onclick="reload();">Try Again</button>
+    </div>
+
+    <div class="startScreen" id="startScreen">
+        <h1>Welcome to Forest</h1>
+        <button class="startButton" onclick="startGame();">Start Game</button>
+    </div>
+
+    <script src="2.js"></script>
+</body>
+</html>

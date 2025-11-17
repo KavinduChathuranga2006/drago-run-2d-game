@@ -19,7 +19,7 @@
 
     function idleAnimation(){
         idleImageNumber++; if(idleImageNumber>10) idleImageNumber=1;
-        boy.src = "images/idle_" + idleImageNumber + ".png";
+        boy.src = "https://github.com/KavinduChathuranga2006/drago-run-2d-game/blob/main/images/idle_" + idleImageNumber + ".png";
     }
     function idleAnimationStart(){ clearInterval(idleIntervalId); idleIntervalId=setInterval(idleAnimation,200); }
 

@@ -2,9 +2,9 @@
 'use strict';
 
 // Audio
-var runSound = new Audio("resources/run.mp3"); runSound.loop = true;
-var jumSound = new Audio("resources/jump.mp3");
-var deadSound = new Audio("resources/dead.mp3");
+var runSound = new Audio("forest/audio/run.mp3"); runSound.loop = true;
+var jumSound = new Audio("forest/audio/jump.mp3");
+var deadSound = new Audio("forest/audio/dead.mp3");
 
 // Elements
 var boy = document.getElementById("boy");
@@ -26,14 +26,14 @@ var boxesCount=8, boyX=50;
 // --- Idle animation ---
 function idleAnimation(){
     idleImageNumber++; if(idleImageNumber>10) idleImageNumber=1;
-    boy.src = "resources/idle_"+idleImageNumber+".png";
+    boy.src = "forest/images/idle_"+idleImageNumber+".png";
 }
 function idleAnimationStart(){ clearInterval(idleIntervalId); idleIntervalId=setInterval(idleAnimation,200); }
 
 // --- Run animation ---
 function runAnimation(){
     runImageNumber++; if(runImageNumber>10) runImageNumber=1;
-    boy.src = "resources/run_"+runImageNumber+".png";
+    boy.src = "forest/images/run_"+runImageNumber+".png";
 }
 function runAnimationStart(){
     if(runIntervalId) return;
@@ -51,7 +51,7 @@ function jumpAnimation(){
     if(jumpImageNumber>10){
         jumpImageNumber=1; clearInterval(jumpIntervalId); jumpIntervalId=0; runImageNumber=0; runAnimationStart();
     }
-    boy.src="resources/jump_"+jumpImageNumber+".png";
+    boy.src="forest/images/jump_"+jumpImageNumber+".png";
 }
 function jumpAnimationStart(){
     if(jumpIntervalId) return;
@@ -104,7 +104,7 @@ function stopGameAndPlayDead(){
 function boyDeadAnimation(){
     deadImageNumber++;
     if(deadImageNumber>=11){ deadImageNumber=10; endScreen.style.visibility="visible"; endScoreElem.innerHTML=score; clearInterval(deadIntervalId); return; }
-    boy.src="resources/dead_"+deadImageNumber+".png";
+    boy.src="forest/images/dead_"+deadImageNumber+".png";
 }
 
 // --- Key Controls ---

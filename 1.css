@@ -1,7 +1,7 @@
 .background{
     width: 100%;
     height: 100vh;
-    background-image: url("images/background.jpg");
+    background-image: url("desert/images/background.jpg");
     background-size: cover;
     background-repeat: repeat-x;
     overflow-x: hidden;
@@ -27,7 +27,7 @@
     /*background-color: red;*/
     position: absolute;
     margin-top: 450px;
-    background-image: url(images/ComplexRegalGelding.webp);
+    background-image: url(desert/images/ComplexRegalGelding.webp);
     background-size: contain;
     background-repeat: no-repeat;
  }

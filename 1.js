@@ -12,20 +12,20 @@
     var endScreen = document.getElementById("end");
     var endScoreElem = document.getElementById("endScore");
 
-    var idleIntervalId = 0, runIntervalId = 0, jumpIntervalId = 0, moveBackgroundIntervalId = 0, boxIntervalId = 0, deadIntervalId = 0;
-    var idleImageNumber = 1, runImageNumber = 1, jumpImageNumber = 1, deadImageNumber = 1;
+    var idleIntervalId = 0, runIntervalId = 0, jumpIntervalId = 0, moveBackgroundIntervalId = 0, boxIntervalId = 0, deadIntervalId = 0, fallIntervalId = 0, hitIntervalId = 0;
+    var idleImageNumber = 1, runImageNumber = 1, jumpImageNumber = 1, deadImageNumber = 1, fallImageNumber = 1, hitImageNumber = 1;
     var boyMarginTop = 355, backgroundPositionX = 0, score = 0;
     var boxesCount = 8, boyX = 50;
 
     function idleAnimation() {
         idleImageNumber++; if (idleImageNumber > 10) idleImageNumber = 1;
-        boy.src = "desert/images/idle_" + idleImageNumber + ".png";
+        boy.src = "desert/images/Idle_" + idleImageNumber + ".png";
     }
     function idleAnimationStart() { clearInterval(idleIntervalId); idleIntervalId = setInterval(idleAnimation, 200); }
 
     function runAnimation() {
         runImageNumber++; if (runImageNumber > 10) runImageNumber = 1;
-        boy.src = "desert/images/run_" + runImageNumber + ".png";
+        boy.src = "desert/images/Run_" + runImageNumber + ".png";
     }
     function runAnimationStart() {
         if (runIntervalId) return;
@@ -46,7 +46,7 @@
             runImageNumber = 0;
             runAnimationStart();
         }
-        boy.src = "desert/images/jump_" + jumpImageNumber + ".png";
+        boy.src = "desert/images/Jump_" + jumpImageNumber + ".png";
     }
     function jumpAnimationStart() {
         if (jumpIntervalId) return;
@@ -105,7 +105,40 @@
     function boyDeadAnimation() {
         deadImageNumber++;
         if (deadImageNumber >= 11) { deadImageNumber = 10; endScreen.style.visibility = "visible"; endScoreElem.innerHTML = score; clearInterval(deadIntervalId); }
-        boy.src = "desert/images/dead_" + deadImageNumber + ".png";
+        boy.src = "desert/images/Dead_" + deadImageNumber + ".png";
+    }
+
+    function fallAnimation() {
+        fallImageNumber++;
+        if (fallImageNumber <= 5) { boyMarginTop += 15; } else if (fallImageNumber <= 10) { boyMarginTop -= 15; }
+        boy.style.marginTop = boyMarginTop + "px";
+        
+        if (fallImageNumber > 10) {
+            fallImageNumber = 1; clearInterval(fallIntervalId); fallIntervalId = 0; runImageNumber = 0; runAnimationStart();
+        }
+        boy.src = "desert/images/Fall_" + fallImageNumber + ".png";
+    }
+    function fallAnimationStart() {
+        if (fallIntervalId) return;
+        clearInterval(idleIntervalId);
+        clearInterval(runIntervalId); runIntervalId = 0;
+        try { runSound.pause(); } catch (e) { }
+        fallIntervalId = setInterval(fallAnimation, 100);
+    }
+
+    function hitAnimation() {
+        hitImageNumber++;
+        if (hitImageNumber > 10) {
+            hitImageNumber = 1; clearInterval(hitIntervalId); hitIntervalId = 0; runImageNumber = 0; runAnimationStart();
+        }
+        boy.src = "desert/images/Hit_" + hitImageNumber + ".png";
+    }
+    function hitAnimationStart() {
+        if (hitIntervalId) return;
+        clearInterval(idleIntervalId);
+        clearInterval(runIntervalId); runIntervalId = 0;
+        try { runSound.pause(); } catch (e) { }
+        hitIntervalId = setInterval(hitAnimation, 100);
     }
 
     function keyCheck(event) {

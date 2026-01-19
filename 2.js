@@ -14,26 +14,45 @@ var endScreen = document.getElementById("end");
 var endScoreElem = document.getElementById("endScore");
 
 // Interval IDs
-var idleIntervalId=0, runIntervalId=0, jumpIntervalId=0, moveBackgroundIntervalId=0, boxIntervalId=0, deadIntervalId=0;
+var idleIntervalId=0, runIntervalId=0, jumpIntervalId=0, moveBackgroundIntervalId=0, boxIntervalId=0, deadIntervalId=0, fallIntervalId=0, hitIntervalId=0;
 
 // Counters
-var idleImageNumber=1, runImageNumber=1, jumpImageNumber=1, deadImageNumber=1;
+var idleImageNumber=1, runImageNumber=1, jumpImageNumber=1, deadImageNumber=1, fallImageNumber=1, hitImageNumber=1;
 
 // Layout
 var boyMarginTop=300, backgroundPositionX=0, score=0;
 var boxesCount=8, boyX=50;
+var jumpDistance=40;
+var isMobile = window.innerWidth <= 600;
+
+function getInitialBoyPosition(){
+    var computedStyle = window.getComputedStyle(boy);
+    return parseInt(computedStyle.marginTop) || 300;
+}
+
+function getJumpDistance(){
+    if(window.innerWidth <= 480) return 25;
+    if(window.innerWidth <= 768) return 32;
+    return 40;
+}
+
+function getBoyGroundLevel(){
+    if(window.innerWidth <= 480) return 240;
+    if(window.innerWidth <= 768) return 260;
+    return 300;
+}
 
 // --- Idle animation ---
 function idleAnimation(){
     idleImageNumber++; if(idleImageNumber>10) idleImageNumber=1;
-    boy.src = "forest/images/idle_"+idleImageNumber+".png";
+    boy.src = "forest/images/Idle_"+idleImageNumber+".png";
 }
 function idleAnimationStart(){ clearInterval(idleIntervalId); idleIntervalId=setInterval(idleAnimation,200); }
 
 // --- Run animation ---
 function runAnimation(){
     runImageNumber++; if(runImageNumber>10) runImageNumber=1;
-    boy.src = "forest/images/run_"+runImageNumber+".png";
+    boy.src = "forest/images/Run_"+runImageNumber+".png";
 }
 function runAnimationStart(){
     if(runIntervalId) return;
@@ -45,13 +64,13 @@ function runAnimationStart(){
 // --- Jump animation ---
 function jumpAnimation(){
     jumpImageNumber++;
-    if(jumpImageNumber<=6) boyMarginTop-=40; else boyMarginTop+=40;
+    if(jumpImageNumber<=6) boyMarginTop-=jumpDistance; else boyMarginTop+=jumpDistance;
     boy.style.marginTop = boyMarginTop+"px";
 
     if(jumpImageNumber>10){
         jumpImageNumber=1; clearInterval(jumpIntervalId); jumpIntervalId=0; runImageNumber=0; runAnimationStart();
     }
-    boy.src="forest/images/jump_"+jumpImageNumber+".png";
+    boy.src="forest/images/Jump_"+jumpImageNumber+".png";
 }
 function jumpAnimationStart(){
     if(jumpIntervalId) return;
@@ -85,7 +104,7 @@ function boxAnimation(){
 
         if(newLeft<-200){ box.style.marginLeft=maxRight+Math.floor(Math.random()*600+600)+"px"; maxRight=parseInt(box.style.marginLeft); }
 
-        if(newLeft<=boyX+50 && newLeft+50>=boyX){ if(boyMarginTop>=300) stopGameAndPlayDead(); }
+        if(newLeft<=boyX+50 && newLeft+50>=boyX){ if(boyMarginTop>=getBoyGroundLevel()-20) stopGameAndPlayDead(); }
     }
 }
 
@@ -104,7 +123,40 @@ function stopGameAndPlayDead(){
 function boyDeadAnimation(){
     deadImageNumber++;
     if(deadImageNumber>=11){ deadImageNumber=10; endScreen.style.visibility="visible"; endScoreElem.innerHTML=score; clearInterval(deadIntervalId); return; }
-    boy.src="forest/images/dead_"+deadImageNumber+".png";
+    boy.src="forest/images/Dead_"+deadImageNumber+".png";
+}
+
+// --- Fall animation ---
+function fallAnimation(){
+    fallImageNumber++;
+    if(fallImageNumber<=5) boyMarginTop+=15; else if(fallImageNumber<=10) boyMarginTop-=15;
+    boy.style.marginTop = boyMarginTop+"px";
+    
+    if(fallImageNumber>10){
+        fallImageNumber=1; clearInterval(fallIntervalId); fallIntervalId=0; runImageNumber=0; runAnimationStart();
+    }
+    boy.src="forest/images/Fall_"+fallImageNumber+".png";
+}
+function fallAnimationStart(){
+    if(fallIntervalId) return;
+    clearInterval(idleIntervalId); clearInterval(runIntervalId); runIntervalId=0;
+    try{ runSound.pause(); }catch(e){}
+    fallIntervalId=setInterval(fallAnimation,100);
+}
+
+// --- Hit animation ---
+function hitAnimation(){
+    hitImageNumber++;
+    if(hitImageNumber>10){
+        hitImageNumber=1; clearInterval(hitIntervalId); hitIntervalId=0; runImageNumber=0; runAnimationStart();
+    }
+    boy.src="forest/images/Hit_"+hitImageNumber+".png";
+}
+function hitAnimationStart(){
+    if(hitIntervalId) return;
+    clearInterval(idleIntervalId); clearInterval(runIntervalId); runIntervalId=0;
+    try{ runSound.pause(); }catch(e){}
+    hitIntervalId=setInterval(hitAnimation,100);
 }
 
 // --- Key Controls ---
@@ -112,6 +164,22 @@ function keyCheck(event){
     var key = event.keyCode;
     if(key===13){ runAnimationStart(); if(!moveBackgroundIntervalId) moveBackgroundIntervalId=setInterval(moveBackground,100); if(!boxIntervalId) boxIntervalId=setInterval(boxAnimation,100); }
     if(key===32){ jumpAnimationStart(); if(!moveBackgroundIntervalId) moveBackgroundIntervalId=setInterval(moveBackground,100); if(!boxIntervalId) boxIntervalId=setInterval(boxAnimation,100); event.preventDefault(); }
+}
+
+function handleJumpEvent(){
+    jumpAnimationStart(); 
+    if(!moveBackgroundIntervalId) moveBackgroundIntervalId=setInterval(moveBackground,100); 
+    if(!boxIntervalId) boxIntervalId=setInterval(boxAnimation,100); 
+}
+
+function handleTouchStart(event){
+    handleJumpEvent();
+    event.preventDefault();
+}
+
+function handleClick(event){
+    if(event.target.closest('.startButton, .button')) return;
+    handleJumpEvent();
 }
 
 // --- Start Game ---
@@ -124,8 +192,12 @@ function startGame(){
 
 // --- Initialize ---
 window.addEventListener("load", function(){
+    jumpDistance = getJumpDistance();
+    boyMarginTop = getInitialBoyPosition();
     boy.style.marginTop=boyMarginTop+"px"; scoreElem.innerHTML=0; createBoxes(); idleAnimationStart();
     document.addEventListener("keydown", keyCheck);
+    document.addEventListener("touchstart", handleTouchStart);
+    document.addEventListener("click", handleClick);
 });
 
 window.startGame=startGame;
